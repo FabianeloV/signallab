@@ -1,0 +1,22 @@
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.freqSection {
+  margin-top: var(--space-6);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 1100px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

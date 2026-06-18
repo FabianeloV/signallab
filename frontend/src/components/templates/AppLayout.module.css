@@ -1,0 +1,22 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content {
+  padding: var(--space-6) var(--space-8);
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: var(--space-5) var(--space-4);
+  }
+}

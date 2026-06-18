@@ -1,0 +1,100 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5);
+  height: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.badges {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.menu {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.menu:hover {
+  background: var(--color-surface-inset);
+  color: var(--color-text-secondary);
+}
+
+.description {
+  margin-top: var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.formulaBox {
+  margin-top: var(--space-4);
+  background: var(--color-primary-softer);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+  overflow-x: auto;
+}
+
+.footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.status {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+.action:hover {
+  background: var(--color-surface-inset);
+}
+
+.actionPrimary {
+  color: var(--color-primary);
+  border-color: transparent;
+  background: transparent;
+}
+.actionPrimary:hover {
+  background: var(--color-primary-soft);
+}

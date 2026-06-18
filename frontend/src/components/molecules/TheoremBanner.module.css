@@ -1,0 +1,44 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+
+.amber {
+  background-color: #fdf0d5;
+  border-color: #f6dca0;
+  color: #8a5a12;
+}
+
+.green {
+  background-color: var(--color-system-soft);
+  border-color: #bfe8d4;
+  color: var(--color-system-text);
+}
+
+.text {
+  font-size: var(--text-base);
+  line-height: 1.45;
+}
+
+.text strong {
+  font-weight: var(--weight-bold);
+}
+
+.formula {
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  white-space: nowrap;
+}
+
+@media (max-width: 880px) {
+  .banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}

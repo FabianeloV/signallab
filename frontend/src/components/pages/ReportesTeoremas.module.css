@@ -1,0 +1,36 @@
+.search {
+  width: 280px;
+}
+
+.tabsRow {
+  margin-bottom: var(--space-6);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.empty {
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  padding: var(--space-8) 0;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .search {
+    width: 100%;
+    flex: 1;
+  }
+}

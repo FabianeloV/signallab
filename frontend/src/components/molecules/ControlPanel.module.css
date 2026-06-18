@@ -1,0 +1,16 @@
+.panel {
+  padding: var(--space-5);
+}
+
+.title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}

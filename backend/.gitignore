@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.env
+.mypy_cache/
+.pytest_cache/
+.DS_Store
+
+# Artefactos de compilación LaTeX
+*.aux
+*.log
+*.out
+*.pdf

@@ -1,0 +1,100 @@
+/**
+ * Tokens de diseño de SignalLab.
+ *
+ * La identidad visual es la de un instrumento científico de laboratorio: fondo
+ * claro y neutro, tarjetas blancas con bordes finos, y un sistema de color que
+ * codifica el rol de cada señal:
+ *   · azul    → entrada x[n]
+ *   · verde   → sistema h[n]
+ *   · púrpura → salida y[n]
+ * El acento ámbar se reserva para el enunciado del teorema de convolución.
+ */
+
+:root {
+  /* --- Superficies --- */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fbfcfd;
+  --color-surface-inset: #f3f5f8;
+
+  /* --- Bordes --- */
+  --color-border: #e8eaee;
+  --color-border-strong: #d9dce1;
+
+  /* --- Texto --- */
+  --color-text: #1a1d23;
+  --color-text-secondary: #5b6470;
+  --color-text-muted: #98a1ad;
+
+  /* --- Azul (entrada / primario) --- */
+  --color-primary: #2f6bef;
+  --color-primary-hover: #265fd8;
+  --color-primary-soft: #ecf1fe;
+  --color-primary-softer: #f5f8ff;
+
+  /* --- Verde (sistema) --- */
+  --color-system: #34b888;
+  --color-system-soft: #e6f7ef;
+  --color-system-text: #157a52;
+
+  /* --- Púrpura (salida) --- */
+  --color-output: #8b5cf6;
+  --color-output-soft: #f1ebfe;
+  --color-output-text: #6d3ddb;
+
+  /* --- Ámbar (teorema) --- */
+  --color-amber: #f5a623;
+  --color-amber-strong: #f59e0b;
+  --color-amber-soft: #fef3c7;
+  --color-amber-text: #b4690e;
+
+  /* --- Señales semánticas adicionales --- */
+  --color-success: #16a34a;
+  --color-success-soft: #ecfdf3;
+  --color-danger: #dc2626;
+
+  /* --- Tipografía --- */
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, Menlo,
+    Consolas, monospace;
+
+  --text-xs: 0.6875rem; /* 11px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.875rem; /* 14px */
+  --text-md: 0.9375rem; /* 15px */
+  --text-lg: 1.0625rem; /* 17px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* --- Espaciado --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  /* --- Radios --- */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* --- Sombras --- */
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+
+  /* --- Layout --- */
+  --sidebar-width: 244px;
+  --topbar-height: 64px;
+}

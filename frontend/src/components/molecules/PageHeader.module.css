@@ -1,0 +1,36 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin-top: 3px;
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+  }
+  .right {
+    width: 100%;
+  }
+}

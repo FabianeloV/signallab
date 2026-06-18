@@ -1,0 +1,17 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@media (max-width: 1100px) {
+  .duo {
+    grid-template-columns: 1fr;
+  }
+}

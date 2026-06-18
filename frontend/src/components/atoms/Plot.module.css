@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  position: relative;
+}
+
+.faded {
+  opacity: 0.4;
+}
+
+.axisText text {
+  font-size: 9px;
+  fill: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.symbolText text {
+  font-size: 10px;
+  fill: var(--color-text-muted);
+  font-family: 'KaTeX_Math', Georgia, serif;
+  font-style: italic;
+}
