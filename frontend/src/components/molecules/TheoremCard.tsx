@@ -41,7 +41,6 @@ export function TheoremCard({ theorem, onOpenLab }: TheoremCardProps) {
           onClick={isLab ? onOpenLab : undefined}
         >
           {isLab ? <Play size={14} /> : <FileText size={14} />}
-          {isLab ? 'Abrir en Laboratorio' : 'Ver Apuntes'}
         </button>
       </div>
     </Card>

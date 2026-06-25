@@ -18,7 +18,7 @@ export function Configuracion() {
           <div className={styles.sectionHead}>
             <Server size={18} className={styles.sectionIcon} />
             <div>
-              <h2 className={styles.sectionTitle}>Motor de Reportes (Backend)</h2>
+              <h2 className={styles.sectionTitle}>Motor de Reportes</h2>
               <p className={styles.sectionDesc}>
                 Servicio Python en Railway que recompone los cálculos con
                 NumPy/SciPy y compila los reportes LaTeX a PDF.
@@ -46,16 +46,9 @@ export function Configuracion() {
             <div className={styles.row}>
               <span className={styles.label}>URL del servicio</span>
               <span className={styles.valueMono}>
-                {HAS_BACKEND ? API_BASE_URL : 'VITE_API_URL no definida'}
+                {HAS_BACKEND ? API_BASE_URL : 'VITE_API_URL'}
               </span>
             </div>
-            <p className={styles.hint}>
-              Para habilitar la descarga de reportes PDF, define la variable de
-              entorno <code>VITE_API_URL</code> en el build del frontend
-              apuntando al dominio del servicio desplegado en Railway. Mientras
-              tanto, todo el cálculo y la exportación de datos en JSON funcionan
-              localmente sin backend.
-            </p>
           </div>
         </Card>
 
@@ -63,7 +56,7 @@ export function Configuracion() {
           <div className={styles.sectionHead}>
             <Cpu size={18} className={styles.sectionIcon} />
             <div>
-              <h2 className={styles.sectionTitle}>Motor de Cálculo (Frontend)</h2>
+              <h2 className={styles.sectionTitle}>Motor de Cálculo</h2>
               <p className={styles.sectionDesc}>
                 Todos los algoritmos de señales se ejecutan en el navegador en
                 TypeScript, lo que mantiene la aplicación funcional sin servidor.

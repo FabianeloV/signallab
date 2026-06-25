@@ -85,7 +85,7 @@ export function LaboratorioLTI() {
   return (
     <>
       <PageHeader
-        title="Convolución Discreta y Transformada de Fourier (DTFT)"
+        title="Convolución y Transformada de Fourier (DTFT)"
         subtitle="Laboratorio virtual para sistemas lineales invariantes en el tiempo."
         right={
           <>
