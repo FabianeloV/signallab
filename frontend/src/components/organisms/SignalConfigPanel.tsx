@@ -1,16 +1,25 @@
 import { ControlPanel } from '../molecules/ControlPanel';
 import { SelectControl } from '../molecules/SelectControl';
 import { SliderControl } from '../molecules/SliderControl';
+import { FormulaHint } from '../molecules/FormulaHint';
 import { Formula } from '../atoms/Formula';
+import { inputSignalFormula } from '../../lib/formulas';
+import { INPUT_PARAM_SPECS } from '../../lib/inputParams';
 import type { SelectOption } from '../atoms/Select';
 import type { InputSignalType } from '../../types/signal';
 
 const INPUT_OPTIONS: SelectOption<InputSignalType>[] = [
   { value: 'exponencial-decreciente', label: 'Exponencial Decreciente' },
+  { value: 'exponencial-creciente', label: 'Exponencial Creciente' },
   { value: 'escalon', label: 'Escalón Unitario' },
   { value: 'impulso', label: 'Impulso Unitario' },
   { value: 'senoide', label: 'Senoide Discreta' },
+  { value: 'coseno', label: 'Coseno Discreto' },
+  { value: 'senoide-amortiguada', label: 'Senoide Amortiguada' },
   { value: 'rampa', label: 'Rampa' },
+  { value: 'pulso-rectangular', label: 'Pulso Rectangular' },
+  { value: 'triangular', label: 'Pulso Triangular' },
+  { value: 'cuadrada', label: 'Onda Cuadrada' },
 ];
 
 interface SignalConfigPanelProps {
@@ -30,8 +39,8 @@ export function SignalConfigPanel({
   onInputParam,
   onLength,
 }: SignalConfigPanelProps) {
-  const showDecay = inputType === 'exponencial-decreciente';
-  const showFreq = inputType === 'senoide';
+  const selected = INPUT_OPTIONS.find((o) => o.value === inputType);
+  const paramSpec = INPUT_PARAM_SPECS[inputType];
 
   return (
     <ControlPanel title={<>Señal de Entrada <Formula expression="x[n]" /></>}>
@@ -42,26 +51,27 @@ export function SignalConfigPanel({
         onChange={onInputType}
       />
 
-      {showDecay && (
-        <SliderControl
-          label={<>Factor de Decaimiento (<Formula expression="a" />)</>}
-          value={inputParam}
-          min={0.1}
-          max={0.99}
-          step={0.01}
-          displayValue={inputParam.toFixed(2)}
-          onChange={onInputParam}
-        />
-      )}
+      <FormulaHint
+        caption={selected?.label}
+        expression={inputSignalFormula(inputType)}
+      />
 
-      {showFreq && (
+      {paramSpec && (
         <SliderControl
-          label={<>Frecuencia (<Formula expression="f" />)</>}
+          label={
+            <>
+              {paramSpec.label} (<Formula expression={paramSpec.symbol} />)
+            </>
+          }
           value={inputParam}
-          min={0.01}
-          max={0.5}
-          step={0.01}
-          displayValue={inputParam.toFixed(2)}
+          min={paramSpec.min}
+          max={paramSpec.max}
+          step={paramSpec.step}
+          displayValue={
+            paramSpec.decimals > 0
+              ? inputParam.toFixed(paramSpec.decimals)
+              : `${inputParam}`
+          }
           onChange={onInputParam}
         />
       )}

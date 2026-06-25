@@ -32,6 +32,21 @@ export interface SpectralResult {
 }
 
 /**
+ * PRNG determinista (mulberry32). Con una semilla fija, el ruido blanco es
+ * reproducible: no se reordena al mover controles que no lo afectan (como f0) y
+ * la exportación da siempre la misma realización.
+ */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
  * Genera la señal de prueba muestreada a Fs a partir de una frecuencia
  * analógica f0. La frecuencia normalizada resultante es ω0 = 2π f0 / Fs.
  */
@@ -43,6 +58,8 @@ export function generateTestSignal(config: SpectralConfig): number[] {
   switch (signalType) {
     case 'senoide':
       return Array.from({ length: N }, (_, n) => Math.sin(w0 * n));
+    case 'coseno':
+      return Array.from({ length: N }, (_, n) => Math.cos(w0 * n));
     case 'suma-senoides':
       return Array.from(
         { length: N },
@@ -59,6 +76,32 @@ export function generateTestSignal(config: SpectralConfig): number[] {
       return Array.from({ length: N }, (_, n) =>
         Math.sign(Math.sin(w0 * n)) || 1,
       );
+    case 'diente-sierra':
+      // Diente de sierra: rampa periódica de −1 a 1 (rica en armónicos ~1/k).
+      return Array.from({ length: N }, (_, n) => {
+        const ph = ((analogFreq * n) / samplingFreq) % 1;
+        return 2 * ph - 1;
+      });
+    case 'triangular':
+      // Onda triangular periódica (armónicos impares ~1/k²).
+      return Array.from({ length: N }, (_, n) => {
+        const ph = ((analogFreq * n) / samplingFreq) % 1;
+        return 1 - 4 * Math.abs(ph - 0.5);
+      });
+    case 'am': {
+      // Modulación de amplitud: portadora w0 con moduladora wm = w0/6.
+      const wm = w0 / 6;
+      return Array.from(
+        { length: N },
+        (_, n) => (1 + 0.5 * Math.cos(wm * n)) * Math.cos(w0 * n),
+      );
+    }
+    case 'ruido': {
+      // Ruido blanco uniforme en [−1, 1] (densidad espectral plana en promedio).
+      // Determinista (semilla fija) para que sea reproducible y no dependa de f0.
+      const rand = mulberry32(0x9e3779b9);
+      return Array.from({ length: N }, () => rand() * 2 - 1);
+    }
     default:
       return Array.from({ length: N }, (_, n) => Math.sin(w0 * n));
   }

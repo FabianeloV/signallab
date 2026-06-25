@@ -9,46 +9,37 @@ import type { Experiment } from '../../data/experiments';
 import styles from './ExperimentosGuardados.module.css';
 
 type TypeFilter = 'todos' | 'lab' | 'spectral';
-type SortOrder = 'recientes' | 'nombre';
 
 export function ExperimentosGuardados() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<Experiment[]>(EXPERIMENTS);
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('todos');
-  const [sort, setSort] = useState<SortOrder>('recientes');
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const filtered = items.filter((e) => {
+    return EXPERIMENTS.filter((e) => {
       const matchesType = typeFilter === 'todos' || e.type === typeFilter;
       const matchesQuery =
         q === '' ||
         e.title.toLowerCase().includes(q) ||
-        e.description.toLowerCase().includes(q) ||
-        e.timeAgo.toLowerCase().includes(q);
+        e.description.toLowerCase().includes(q);
       return matchesType && matchesQuery;
     });
-    if (sort === 'nombre') {
-      return [...filtered].sort((a, b) => a.title.localeCompare(b.title));
-    }
-    return filtered;
-  }, [items, query, typeFilter, sort]);
+  }, [query, typeFilter]);
 
-  const handleDelete = (id: string) =>
-    setItems((prev) => prev.filter((e) => e.id !== id));
-
-  const handleLoad = (exp: Experiment) =>
-    navigate(exp.type === 'lab' ? '/laboratorio' : '/analisis');
+  const handleLoad = (exp: Experiment) => {
+    const state = { preset: exp.config, presetName: exp.title };
+    navigate(exp.type === 'lab' ? '/laboratorio' : '/analisis', { state });
+  };
 
   return (
     <>
       <PageHeader
-        title="Experimentos Guardados"
-        subtitle="Gestiona y recarga tus señales LTI y análisis espectrales previos."
+        title="Experimentos de Ejemplo"
+        subtitle="Carga escenarios de muestra que ilustran los teoremas en el Laboratorio LTI o el Análisis Espectral."
         right={
           <span className={styles.total}>
-            {items.length} Experimentos Totales
+            {EXPERIMENTS.length} experimentos de ejemplo
           </span>
         }
       />
@@ -57,7 +48,7 @@ export function ExperimentosGuardados() {
         <SearchInput
           value={query}
           onChange={setQuery}
-          placeholder="Buscar por nombre, tipo o fecha…"
+          placeholder="Buscar por nombre o concepto…"
         />
         <div className={styles.filters}>
           <Select<TypeFilter>
@@ -67,14 +58,6 @@ export function ExperimentosGuardados() {
               { value: 'todos', label: 'Todos los tipos' },
               { value: 'lab', label: 'Laboratorio LTI' },
               { value: 'spectral', label: 'Análisis Espectral' },
-            ]}
-          />
-          <Select<SortOrder>
-            value={sort}
-            onChange={setSort}
-            options={[
-              { value: 'recientes', label: 'Más recientes' },
-              { value: 'nombre', label: 'Por nombre' },
             ]}
           />
         </div>
@@ -87,14 +70,13 @@ export function ExperimentosGuardados() {
               key={exp.id}
               experiment={exp}
               onLoad={() => handleLoad(exp)}
-              onDelete={() => handleDelete(exp.id)}
             />
           ))}
         </div>
       ) : (
         <p className={styles.empty}>
-          No hay experimentos que coincidan. Ajusta los filtros o crea uno
-          nuevo desde el Laboratorio LTI.
+          No hay experimentos que coincidan. Ajusta la búsqueda o el filtro de
+          tipo.
         </p>
       )}
     </>

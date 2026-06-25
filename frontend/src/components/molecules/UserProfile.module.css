@@ -16,6 +16,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  /* Cuando es un <img> de perfil, recorta sin deformar. */
+  object-fit: cover;
 }
 
 .meta {

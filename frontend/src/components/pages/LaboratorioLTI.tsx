@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Download, FileText } from 'lucide-react';
 import { PageHeader } from '../molecules/PageHeader';
 import { StatusPill } from '../molecules/StatusPill';
@@ -15,6 +16,7 @@ import type { LTIConfig } from '../../hooks/useLTISystem';
 import { generateLTIReport } from '../../lib/api/reports';
 import { downloadJson } from '../../lib/download';
 import { inputLabel, filterLabel } from '../../lib/labels';
+import { defaultInputParam } from '../../lib/inputParams';
 import styles from './Workbench.module.css';
 
 const INITIAL: LTIConfig = {
@@ -29,9 +31,25 @@ const INITIAL: LTIConfig = {
 type Status = { kind: 'ok' | 'error'; text: string } | null;
 
 export function LaboratorioLTI() {
-  const [config, setConfig] = useState<LTIConfig>(INITIAL);
-  const [status, setStatus] = useState<Status>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const nav = location.state as { preset?: LTIConfig; presetName?: string } | null;
+
+  const [config, setConfig] = useState<LTIConfig>(() => nav?.preset ?? INITIAL);
+  const [status, setStatus] = useState<Status>(
+    nav?.presetName
+      ? { kind: 'ok', text: `Experimento cargado: ${nav.presetName}.` }
+      : null,
+  );
   const [loading, setLoading] = useState(false);
+
+  // El preset ya quedó capturado en el estado inicial; limpiamos el state del
+  // historial para que "Atrás" o una recarga no vuelvan a imponerlo sobre las
+  // ediciones del usuario.
+  useEffect(() => {
+    if (location.state) navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const result = useLTISystem(config);
 
@@ -89,7 +107,13 @@ export function LaboratorioLTI() {
             inputType={config.inputType}
             inputParam={config.inputParam}
             length={config.length}
-            onInputType={(v) => update('inputType', v)}
+            onInputType={(v) =>
+              setConfig((c) => ({
+                ...c,
+                inputType: v,
+                inputParam: defaultInputParam(v) ?? c.inputParam,
+              }))
+            }
             onInputParam={(v) => update('inputParam', v)}
             onLength={(v) => update('length', v)}
           />

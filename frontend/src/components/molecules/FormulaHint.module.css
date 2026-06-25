@@ -1,0 +1,30 @@
+.hint {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background-color: var(--color-surface-inset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+/* La fórmula se centra; permite scroll horizontal si es muy ancha. */
+.formula {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--color-text);
+}
+
+/* Anula los márgenes del bloque display de KaTeX dentro del recuadro. */
+.formula :global(.katex-display) {
+  margin: 0;
+}

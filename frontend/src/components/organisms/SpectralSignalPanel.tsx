@@ -1,15 +1,22 @@
 import { ControlPanel } from '../molecules/ControlPanel';
 import { SelectControl } from '../molecules/SelectControl';
 import { SliderControl } from '../molecules/SliderControl';
+import { FormulaHint } from '../molecules/FormulaHint';
 import { Formula } from '../atoms/Formula';
+import { spectralSignalFormula } from '../../lib/formulas';
 import type { SelectOption } from '../atoms/Select';
 import type { TestSignalType } from '../../types/signal';
 
 const SIGNAL_OPTIONS: SelectOption<TestSignalType>[] = [
   { value: 'senoide', label: 'Senoide Discreta' },
+  { value: 'coseno', label: 'Coseno Discreto' },
   { value: 'suma-senoides', label: 'Suma de Senoides' },
-  { value: 'chirp', label: 'Chirp (Barrido)' },
   { value: 'cuadrada', label: 'Onda Cuadrada' },
+  { value: 'diente-sierra', label: 'Diente de Sierra' },
+  { value: 'triangular', label: 'Onda Triangular' },
+  { value: 'chirp', label: 'Chirp (Barrido)' },
+  { value: 'am', label: 'Modulación AM' },
+  { value: 'ruido', label: 'Ruido Blanco' },
 ];
 
 const FS_OPTIONS: SelectOption<string>[] = [
@@ -41,6 +48,8 @@ export function SpectralSignalPanel({
   onSamplingFreq,
   onNumSamples,
 }: SpectralSignalPanelProps) {
+  const selected = SIGNAL_OPTIONS.find((o) => o.value === signalType);
+
   return (
     <ControlPanel title={<>Señal de Prueba <Formula expression="x[n]" /></>}>
       <SelectControl
@@ -50,14 +59,23 @@ export function SpectralSignalPanel({
         onChange={onSignalType}
       />
 
+      <FormulaHint
+        caption={selected?.label}
+        expression={spectralSignalFormula(signalType)}
+      />
+
       <SliderControl
+        // El máximo llega hasta Fs (no solo Fs/2) para permitir el submuestreo
+        // por encima de Nyquist y poder observar el aliasing.
         label={<>Frecuencia Analógica (<Formula expression="f_0" /> en Hz)</>}
         value={analogFreq}
         min={1}
-        max={Math.floor(samplingFreq / 2)}
+        max={samplingFreq - 1}
         step={1}
         displayValue={`${analogFreq}`}
         onChange={onAnalogFreq}
+        // El ruido blanco no depende de f0: se atenúa para indicarlo.
+        muted={signalType === 'ruido'}
       />
 
       <SelectControl

@@ -1,4 +1,3 @@
-import { Clock, Trash2 } from 'lucide-react';
 import { Card } from '../atoms/Card';
 import { Badge } from '../atoms/Badge';
 import { StemPlot } from '../atoms/StemPlot';
@@ -9,14 +8,9 @@ import styles from './ExperimentCard.module.css';
 interface ExperimentCardProps {
   experiment: Experiment;
   onLoad?: () => void;
-  onDelete?: () => void;
 }
 
-export function ExperimentCard({
-  experiment,
-  onLoad,
-  onDelete,
-}: ExperimentCardProps) {
+export function ExperimentCard({ experiment, onLoad }: ExperimentCardProps) {
   const isLab = experiment.type === 'lab';
 
   return (
@@ -35,22 +29,9 @@ export function ExperimentCard({
         <p className={styles.description}>{experiment.description}</p>
 
         <div className={styles.footer}>
-          <span className={styles.timestamp}>
-            <Clock size={13} />
-            {experiment.timeAgo}
-          </span>
-          <div className={styles.actions}>
-            <button
-              className={styles.iconBtn}
-              aria-label="Eliminar experimento"
-              onClick={onDelete}
-            >
-              <Trash2 size={15} />
-            </button>
-            <button className={styles.loadBtn} onClick={onLoad}>
-              Cargar Experimento
-            </button>
-          </div>
+          <button className={styles.loadBtn} onClick={onLoad}>
+            Cargar Experimento
+          </button>
         </div>
       </div>
     </Card>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { PageHeader } from '../molecules/PageHeader';
 import { StatusPill } from '../molecules/StatusPill';
@@ -24,9 +25,31 @@ const INITIAL: SpectralConfig = {
   scale: 'logaritmica',
 };
 
+type Status = { kind: 'ok' | 'error'; text: string } | null;
+
 export function AnalisisEspectral() {
-  const [config, setConfig] = useState<SpectralConfig>(INITIAL);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const nav = location.state as
+    | { preset?: SpectralConfig; presetName?: string }
+    | null;
+
+  const [config, setConfig] = useState<SpectralConfig>(
+    () => nav?.preset ?? INITIAL,
+  );
+  const [status, setStatus] = useState<Status>(
+    nav?.presetName
+      ? { kind: 'ok', text: `Experimento cargado: ${nav.presetName}.` }
+      : null,
+  );
   const result = useSpectralAnalysis(config);
+
+  // El preset ya quedó capturado en el estado inicial; limpiamos el state del
+  // historial para que "Atrás" o una recarga no vuelvan a imponerlo.
+  useEffect(() => {
+    if (location.state) navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const update = <K extends keyof SpectralConfig>(
     key: K,
@@ -77,11 +100,11 @@ export function AnalisisEspectral() {
             onSignalType={(v) => update('signalType', v)}
             onAnalogFreq={(v) => update('analogFreq', v)}
             onSamplingFreq={(v) => {
-              // Mantener f0 por debajo de Nyquist al cambiar Fs.
+              // Mantener f0 dentro del rango del slider (máx. Fs − 1) al cambiar Fs.
               setConfig((c) => ({
                 ...c,
                 samplingFreq: v,
-                analogFreq: Math.min(c.analogFreq, Math.floor(v / 2)),
+                analogFreq: Math.min(c.analogFreq, v - 1),
               }));
             }}
             onNumSamples={(v) => update('numSamples', v)}
@@ -96,9 +119,23 @@ export function AnalisisEspectral() {
           />
 
           <div className={styles.actions}>
-            <Button fullWidth onClick={handleExport}>
+            <Button
+              fullWidth
+              onClick={() =>
+                setStatus({ kind: 'ok', text: 'Espectros actualizados.' })
+              }
+            >
               Actualizar Espectros
             </Button>
+            {status && (
+              <p
+                className={`${styles.statusMessage} ${
+                  status.kind === 'ok' ? styles.statusOk : styles.statusError
+                }`}
+              >
+                {status.text}
+              </p>
+            )}
           </div>
         </div>
 

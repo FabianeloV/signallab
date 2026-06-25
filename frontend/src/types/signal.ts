@@ -34,16 +34,25 @@ export interface Spectrum {
 /** Catálogo de señales de entrada x[n] disponibles en el laboratorio. */
 export type InputSignalType =
   | 'exponencial-decreciente'
+  | 'exponencial-creciente'
   | 'escalon'
   | 'impulso'
   | 'senoide'
-  | 'rampa';
+  | 'coseno'
+  | 'senoide-amortiguada'
+  | 'rampa'
+  | 'pulso-rectangular'
+  | 'triangular'
+  | 'cuadrada';
 
 /** Catálogo de sistemas / filtros h[n] disponibles. */
 export type FilterType =
   | 'promediador-fir'
+  | 'promediador-ponderado'
+  | 'pasa-altos-fir'
   | 'diferenciador'
   | 'iir-primer-orden'
+  | 'eco'
   | 'paso-todo';
 
 /** Ventanas de análisis para el módulo espectral. */
@@ -52,9 +61,14 @@ export type WindowType = 'rectangular' | 'hamming' | 'hanning' | 'blackman';
 /** Señales de prueba del módulo de análisis espectral. */
 export type TestSignalType =
   | 'senoide'
+  | 'coseno'
   | 'suma-senoides'
   | 'chirp'
-  | 'cuadrada';
+  | 'cuadrada'
+  | 'diente-sierra'
+  | 'triangular'
+  | 'am'
+  | 'ruido';
 
 /** Escala del eje de magnitud en los espectros. */
 export type MagnitudeScale = 'lineal' | 'logaritmica';
