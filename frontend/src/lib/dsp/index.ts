@@ -7,6 +7,7 @@
 export * from './signals';
 export * from './systems';
 export * from './convolution';
+export * from './convolutionFrame';
 export * from './dtft';
 export * from './fft';
 export * from './windows';

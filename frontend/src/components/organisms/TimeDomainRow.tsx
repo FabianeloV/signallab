@@ -28,7 +28,7 @@ export function TimeDomainRow({
       <div className={styles.row}>
         <PlotCard
           title={<>Entrada <Formula expression="x[n]" /></>}
-          badge={<Badge tone="amber">{inputLabel}</Badge>}
+          badge={<Badge tone="blue">{inputLabel}</Badge>}
         >
           <StemPlot
             samples={x.samples}

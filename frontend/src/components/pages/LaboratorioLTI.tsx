@@ -9,6 +9,7 @@ import {
   SignalConfigPanel,
   SystemConfigPanel,
   TimeDomainRow,
+  ConvolutionAnimator,
   FrequencyDomainRow,
 } from '../organisms';
 import { useLTISystem } from '../../hooks/useLTISystem';
@@ -160,6 +161,11 @@ export function LaboratorioLTI() {
           />
           <div style={{ height: 'var(--space-6)' }} />
           <TimeDomainRow
+            result={result}
+            inputLabel={inputLabel(config.inputType)}
+            systemLabel={filterLabel(config.filterType)}
+          />
+          <ConvolutionAnimator
             result={result}
             inputLabel={inputLabel(config.inputType)}
             systemLabel={filterLabel(config.filterType)}

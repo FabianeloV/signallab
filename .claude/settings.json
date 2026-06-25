@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(grep -iE \"preset|LTIConfig|: [0-9]{3,}\")"
+    ]
+  }
+}
