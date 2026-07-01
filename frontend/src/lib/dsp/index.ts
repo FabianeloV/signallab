@@ -12,3 +12,8 @@ export * from './dtft';
 export * from './fft';
 export * from './windows';
 export * from './spectral';
+export * from './continuousSignals';
+export * from './continuousSystems';
+export * from './continuousConvolution';
+export * from './continuousConvolutionFrame';
+export * from './ctft';

@@ -1,4 +1,4 @@
-import type { InputSignalType } from '../types/signal';
+import type { InputSignalType, LTIMode } from '../types/signal';
 
 /**
  * Especificación del deslizador del parámetro secundario de cada señal de
@@ -63,6 +63,38 @@ export const INPUT_PARAM_SPECS: Partial<Record<InputSignalType, InputParamSpec>>
   'pulso-rectangular': { ...WIDTH, default: 8 },
   triangular: { ...WIDTH, default: 12 },
 };
+
+/**
+ * Etiquetas de los mismos parámetros en tiempo continuo (mismo rango
+ * numérico; solo cambia el texto/unidad mostrada: Hz en vez de
+ * ciclos/muestra, segundos en vez de muestras, 1/s en vez de "por muestra").
+ */
+const CONTINUOUS_LABELS: Partial<Record<InputSignalType, { label: string; symbol?: string }>> = {
+  'exponencial-decreciente': { label: 'Factor de Decaimiento (1/s)' },
+  'exponencial-creciente': { label: 'Factor de Crecimiento (1/s)' },
+  senoide: { label: 'Frecuencia (Hz)' },
+  coseno: { label: 'Frecuencia (Hz)' },
+  'senoide-amortiguada': { label: 'Frecuencia (Hz)' },
+  cuadrada: { label: 'Frecuencia (Hz)' },
+  'pulso-rectangular': { label: 'Ancho (s)' },
+  triangular: { label: 'Ancho (s)' },
+};
+
+/**
+ * Especificación del deslizador del parámetro secundario para un tipo y modo
+ * dados. En continuo se reutilizan los mismos rangos numéricos, solo cambia
+ * la etiqueta/unidad mostrada.
+ */
+export function getInputParamSpec(
+  type: InputSignalType,
+  mode: LTIMode = 'discreto',
+): InputParamSpec | undefined {
+  const spec = INPUT_PARAM_SPECS[type];
+  if (!spec) return undefined;
+  if (mode !== 'continuo') return spec;
+  const override = CONTINUOUS_LABELS[type];
+  return override ? { ...spec, ...override } : spec;
+}
 
 /**
  * Valor por defecto del parámetro para un tipo dado, o `undefined` si el tipo no

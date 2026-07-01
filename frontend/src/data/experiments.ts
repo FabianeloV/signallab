@@ -42,6 +42,7 @@ export const EXPERIMENTS: Experiment[] = [
     preview: 'stem',
     previewSamples: [0.2, 0.6, 0.85, 0.6, 0.2, -0.2, -0.5],
     config: {
+      mode: 'discreto',
       inputType: 'senoide',
       inputParam: 0.12,
       length: 32,
@@ -59,6 +60,7 @@ export const EXPERIMENTS: Experiment[] = [
     preview: 'stem',
     previewSamples: [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45],
     config: {
+      mode: 'discreto',
       inputType: 'impulso',
       inputParam: 1,
       length: 24,
@@ -76,6 +78,7 @@ export const EXPERIMENTS: Experiment[] = [
     preview: 'stem',
     previewSamples: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.0],
     config: {
+      mode: 'discreto',
       inputType: 'escalon',
       inputParam: 1,
       length: 24,
@@ -93,6 +96,7 @@ export const EXPERIMENTS: Experiment[] = [
     preview: 'stem',
     previewSamples: [1.0, 0.7, 0.49, 0.34, 0.24, 0.17, 0.12],
     config: {
+      mode: 'discreto',
       inputType: 'impulso',
       inputParam: 1,
       length: 24,
@@ -110,6 +114,7 @@ export const EXPERIMENTS: Experiment[] = [
     preview: 'stem',
     previewSamples: [1.0, 0, 0, 0, 0, 0, -1.0],
     config: {
+      mode: 'discreto',
       inputType: 'escalon',
       inputParam: 1,
       length: 20,

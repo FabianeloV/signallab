@@ -14,3 +14,7 @@ export { Formula } from './Formula';
 export { StemPlot } from './StemPlot';
 export { SpectrumPlot } from './SpectrumPlot';
 export type { AxisTick } from './SpectrumPlot';
+export { ContinuousPlot } from './ContinuousPlot';
+export type { ImpulseMarker } from './ContinuousPlot';
+export { ConvolutionStage } from './ConvolutionStage';
+export { ContinuousConvolutionStage } from './ContinuousConvolutionStage';

@@ -1,4 +1,4 @@
-import type { FilterType, InputSignalType, TestSignalType } from '../types/signal';
+import type { FilterType, InputSignalType, LTIMode, TestSignalType } from '../types/signal';
 
 /**
  * Forma matemática (en LaTeX) de cada opción de señal y sistema. Se muestra
@@ -33,6 +33,33 @@ const SYSTEM_FORMULAS: Record<FilterType, string> = {
   'paso-todo': 'h[n] = \\delta[n - n_d]',
 };
 
+const INPUT_FORMULAS_CONTINUOUS: Record<InputSignalType, string> = {
+  'exponencial-decreciente': 'x(t) = a^{t}\\,u(t)',
+  'exponencial-creciente': 'x(t) = a^{t}\\,u(t), \\quad a > 1',
+  escalon: 'x(t) = u(t)',
+  impulso: 'x(t) = \\delta(t)',
+  senoide: 'x(t) = \\sin(2\\pi f t)',
+  coseno: 'x(t) = \\cos(2\\pi f t)',
+  'senoide-amortiguada': 'x(t) = e^{-0.85\\,t}\\sin(2\\pi f t)\\,u(t)',
+  rampa: 'x(t) = t\\,u(t)',
+  'pulso-rectangular': 'x(t) = u(t) - u(t-W)',
+  triangular:
+    'x(t) = 1 - \\dfrac{|\\,t - W/2\\,|}{W/2}, \\quad 0 \\le t \\le W',
+  cuadrada: 'x(t) = \\operatorname{sgn}\\!\\big(\\sin(2\\pi f t)\\big)',
+};
+
+const SYSTEM_FORMULAS_CONTINUOUS: Record<FilterType, string> = {
+  'promediador-fir': 'h(t) = \\dfrac{1}{T}, \\quad 0 \\le t \\le T',
+  'promediador-ponderado':
+    'h(t) \\propto 1 - \\dfrac{|\\,t - T/2\\,|}{T/2}, \\quad 0 \\le t \\le T',
+  'pasa-altos-fir':
+    'h(t) = \\delta(t) - \\dfrac{1}{T}, \\quad 0 \\le t \\le T',
+  diferenciador: 'h(t) \\approx \\dfrac{\\delta(t) - \\delta(t-dt)}{dt}',
+  'iir-primer-orden': 'h(t) = (0.7)\\,e^{-0.7\\,t}\\,u(t)',
+  eco: 'h(t) = \\delta(t) + 0.6\\,\\delta(t - t_d)',
+  'paso-todo': 'h(t) = \\delta(t - t_d)',
+};
+
 const W0 = '\\omega_0 = 2\\pi f_0 / F_s';
 
 const SPECTRAL_FORMULAS: Record<TestSignalType, string> = {
@@ -47,14 +74,14 @@ const SPECTRAL_FORMULAS: Record<TestSignalType, string> = {
   ruido: `x[n] \\sim \\mathcal{U}[-1,\\,1]`,
 };
 
-/** Forma matemática de la señal de entrada x[n] del laboratorio LTI. */
-export function inputSignalFormula(type: InputSignalType): string {
-  return INPUT_FORMULAS[type];
+/** Forma matemática de la señal de entrada x[n] (o x(t)) del laboratorio LTI. */
+export function inputSignalFormula(type: InputSignalType, mode: LTIMode = 'discreto'): string {
+  return mode === 'continuo' ? INPUT_FORMULAS_CONTINUOUS[type] : INPUT_FORMULAS[type];
 }
 
-/** Forma matemática de la respuesta al impulso h[n] del sistema LTI. */
-export function systemFormula(type: FilterType): string {
-  return SYSTEM_FORMULAS[type];
+/** Forma matemática de la respuesta al impulso h[n] (o h(t)) del sistema LTI. */
+export function systemFormula(type: FilterType, mode: LTIMode = 'discreto'): string {
+  return mode === 'continuo' ? SYSTEM_FORMULAS_CONTINUOUS[type] : SYSTEM_FORMULAS[type];
 }
 
 /** Forma matemática de la señal de prueba x[n] del módulo de análisis espectral. */

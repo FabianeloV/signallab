@@ -4,6 +4,8 @@ import { Download, FileText } from 'lucide-react';
 import { PageHeader } from '../molecules/PageHeader';
 import { StatusPill } from '../molecules/StatusPill';
 import { Button } from '../atoms/Button';
+import { RadioGroup } from '../atoms/RadioGroup';
+import type { RadioOption } from '../atoms/RadioGroup';
 import { TheoremBanner } from '../molecules/TheoremBanner';
 import {
   SignalConfigPanel,
@@ -14,6 +16,7 @@ import {
 } from '../organisms';
 import { useLTISystem } from '../../hooks/useLTISystem';
 import type { LTIConfig } from '../../hooks/useLTISystem';
+import type { LTIMode } from '../../types/signal';
 import { generateLTIReport } from '../../lib/api/reports';
 import { downloadJson } from '../../lib/download';
 import { inputLabel, filterLabel } from '../../lib/labels';
@@ -21,6 +24,7 @@ import { defaultInputParam } from '../../lib/inputParams';
 import styles from './Workbench.module.css';
 
 const INITIAL: LTIConfig = {
+  mode: 'discreto',
   inputType: 'exponencial-decreciente',
   inputParam: 0.75,
   length: 20,
@@ -28,6 +32,11 @@ const INITIAL: LTIConfig = {
   order: 6,
   delay: 0,
 };
+
+const MODE_OPTIONS: RadioOption<LTIMode>[] = [
+  { value: 'discreto', label: 'Tiempo Discreto' },
+  { value: 'continuo', label: 'Tiempo Continuo' },
+];
 
 type Status = { kind: 'ok' | 'error'; text: string } | null;
 
@@ -76,6 +85,7 @@ export function LaboratorioLTI() {
   };
 
   const handleReport = async () => {
+    if (config.mode === 'continuo') return;
     setLoading(true);
     setStatus(null);
     const res = await generateLTIReport(config);
@@ -104,7 +114,15 @@ export function LaboratorioLTI() {
 
       <div className={styles.workbench}>
         <div className={styles.controls}>
+          <RadioGroup
+            name="lti-mode"
+            value={config.mode}
+            options={MODE_OPTIONS}
+            onChange={(v) => update('mode', v)}
+          />
+
           <SignalConfigPanel
+            mode={config.mode}
             inputType={config.inputType}
             inputParam={config.inputParam}
             length={config.length}
@@ -119,6 +137,7 @@ export function LaboratorioLTI() {
             onLength={(v) => update('length', v)}
           />
           <SystemConfigPanel
+            mode={config.mode}
             filterType={config.filterType}
             order={config.order}
             delay={config.delay}
@@ -136,9 +155,13 @@ export function LaboratorioLTI() {
               fullWidth
               icon={<FileText size={16} />}
               onClick={handleReport}
-              disabled={loading}
+              disabled={loading || config.mode === 'continuo'}
             >
-              {loading ? 'Generando reporte…' : 'Generar Reporte Formal'}
+              {config.mode === 'continuo'
+                ? 'Reporte solo en Tiempo Discreto'
+                : loading
+                  ? 'Generando reporte…'
+                  : 'Generar Reporte Formal'}
             </Button>
             {status && (
               <p
@@ -157,7 +180,11 @@ export function LaboratorioLTI() {
             tone="amber"
             lead="Teorema de Convolución:"
             description="La convolución en el dominio del tiempo equivale a la multiplicación en el dominio de la frecuencia."
-            formula="y[n] = x[n] * h[n] \;\Rightarrow\; Y(\Omega) = X(\Omega)H(\Omega)"
+            formula={
+              config.mode === 'continuo'
+                ? 'y(t) = x(t) * h(t) \\;\\Rightarrow\\; Y(j\\omega) = X(j\\omega)H(j\\omega)'
+                : 'y[n] = x[n] * h[n] \\;\\Rightarrow\\; Y(\\Omega) = X(\\Omega)H(\\Omega)'
+            }
           />
           <div style={{ height: 'var(--space-6)' }} />
           <TimeDomainRow

@@ -5,7 +5,7 @@ import { FormulaHint } from '../molecules/FormulaHint';
 import { Formula } from '../atoms/Formula';
 import { systemFormula } from '../../lib/formulas';
 import type { SelectOption } from '../atoms/Select';
-import type { FilterType } from '../../types/signal';
+import type { FilterType, LTIMode } from '../../types/signal';
 
 const FILTER_OPTIONS: SelectOption<FilterType>[] = [
   { value: 'promediador-fir', label: 'Promediador Móvil (FIR)' },
@@ -29,6 +29,7 @@ const ORDER_FILTERS: FilterType[] = [
 const DELAY_FILTERS: FilterType[] = ['eco', 'paso-todo'];
 
 interface SystemConfigPanelProps {
+  mode: LTIMode;
   filterType: FilterType;
   order: number;
   delay: number;
@@ -38,6 +39,7 @@ interface SystemConfigPanelProps {
 }
 
 export function SystemConfigPanel({
+  mode,
   filterType,
   order,
   delay,
@@ -45,14 +47,17 @@ export function SystemConfigPanel({
   onOrder,
   onDelay,
 }: SystemConfigPanelProps) {
+  const continuous = mode === 'continuo';
   // El orden solo aplica a los FIR de longitud variable y al IIR.
   const orderApplies = ORDER_FILTERS.includes(filterType);
-  // El retraso es esencial para eco y paso-todo; en el resto solo desplaza h[n].
+  // El retraso es esencial para eco y paso-todo; en el resto solo desplaza h[n]/h(t).
   const delayApplies = DELAY_FILTERS.includes(filterType);
   const selected = FILTER_OPTIONS.find((o) => o.value === filterType);
 
   return (
-    <ControlPanel title={<>Respuesta al Impulso <Formula expression="h[n]" /></>}>
+    <ControlPanel
+      title={<>Respuesta al Impulso <Formula expression={continuous ? 'h(t)' : 'h[n]'} /></>}
+    >
       <SelectControl
         label="Tipo de Filtro (Sistema LTI)"
         value={filterType}
@@ -62,11 +67,17 @@ export function SystemConfigPanel({
 
       <FormulaHint
         caption={selected?.label}
-        expression={systemFormula(filterType)}
+        expression={systemFormula(filterType, mode)}
       />
 
       <SliderControl
-        label={<>Orden del Filtro (<Formula expression="M" />)</>}
+        label={
+          continuous ? (
+            <>Duración de Ventana (<Formula expression="T,\ s" />)</>
+          ) : (
+            <>Orden del Filtro (<Formula expression="M" />)</>
+          )
+        }
         value={order}
         min={1}
         max={12}
@@ -76,7 +87,13 @@ export function SystemConfigPanel({
       />
 
       <SliderControl
-        label={<>Retraso (<Formula expression="n_d" />)</>}
+        label={
+          continuous ? (
+            <>Retraso (<Formula expression="t_d,\ s" />)</>
+          ) : (
+            <>Retraso (<Formula expression="n_d" />)</>
+          )
+        }
         value={delay}
         min={0}
         max={10}

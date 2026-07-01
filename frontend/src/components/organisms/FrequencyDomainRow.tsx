@@ -2,6 +2,7 @@ import { PlotCard } from '../molecules/PlotCard';
 import { SpectrumPlot } from '../atoms/SpectrumPlot';
 import type { AxisTick } from '../atoms/SpectrumPlot';
 import { Formula } from '../atoms/Formula';
+import { CTFT_OMEGA_MAX } from '../../lib/dsp';
 import type { LTIResult } from '../../hooks/useLTISystem';
 import styles from './PlotRow.module.css';
 
@@ -17,8 +18,18 @@ const PI_TICKS: AxisTick[] = [
   { value: Math.PI, label: 'π' },
 ];
 
+const OMEGA_TICKS: AxisTick[] = [
+  { value: -CTFT_OMEGA_MAX, label: `−${CTFT_OMEGA_MAX}` },
+  { value: 0, label: '0' },
+  { value: CTFT_OMEGA_MAX, label: `${CTFT_OMEGA_MAX}` },
+];
+
 export function FrequencyDomainRow({ result }: FrequencyDomainRowProps) {
   const { X, H, Y } = result;
+  const continuous = result.mode === 'continuo';
+  const magnitudeSymbol = (letter: string) =>
+    continuous ? `|${letter}(j\\omega)|` : `|${letter}(\\Omega)|`;
+  const xTicks = continuous ? OMEGA_TICKS : PI_TICKS;
 
   const maxX = Math.max(...X.magnitude, 1e-6);
   const maxH = Math.max(...H.magnitude, 1e-6);
@@ -27,10 +38,12 @@ export function FrequencyDomainRow({ result }: FrequencyDomainRowProps) {
   return (
     <section className={styles.freqSection}>
       <h2 className={styles.sectionTitle}>
-        Dominio de la Frecuencia (DTFT · Multiplicación)
+        {continuous
+          ? 'Dominio de la Frecuencia (CTFT · Multiplicación)'
+          : 'Dominio de la Frecuencia (DTFT · Multiplicación)'}
       </h2>
       <div className={styles.row}>
-        <PlotCard title={<>Magnitud <Formula expression="|X(\Omega)|" /></>}>
+        <PlotCard title={<>Magnitud <Formula expression={magnitudeSymbol('X')} /></>}>
           <SpectrumPlot
             omega={X.omega}
             values={X.magnitude}
@@ -39,11 +52,11 @@ export function FrequencyDomainRow({ result }: FrequencyDomainRowProps) {
             fill
             yDomain={[0, maxX * 1.1]}
             yTicks={magnitudeTicks(maxX)}
-            xTicks={PI_TICKS}
+            xTicks={xTicks}
           />
         </PlotCard>
 
-        <PlotCard title={<>Magnitud <Formula expression="|H(\Omega)|" /></>}>
+        <PlotCard title={<>Magnitud <Formula expression={magnitudeSymbol('H')} /></>}>
           <SpectrumPlot
             omega={H.omega}
             values={H.magnitude}
@@ -53,14 +66,21 @@ export function FrequencyDomainRow({ result }: FrequencyDomainRowProps) {
             faded
             yDomain={[0, maxH * 1.1]}
             yTicks={magnitudeTicks(maxH)}
-            xTicks={PI_TICKS}
+            xTicks={xTicks}
           />
         </PlotCard>
 
         <PlotCard
           title={
             <>
-              Magnitud <Formula expression="|Y(\Omega)| = |X(\Omega)||H(\Omega)|" />
+              Magnitud{' '}
+              <Formula
+                expression={
+                  continuous
+                    ? '|Y(j\\omega)| = |X(j\\omega)||H(j\\omega)|'
+                    : '|Y(\\Omega)| = |X(\\Omega)||H(\\Omega)|'
+                }
+              />
             </>
           }
         >
@@ -72,7 +92,7 @@ export function FrequencyDomainRow({ result }: FrequencyDomainRowProps) {
             fill
             yDomain={[0, maxY * 1.1]}
             yTicks={magnitudeTicks(maxY)}
-            xTicks={PI_TICKS}
+            xTicks={xTicks}
           />
         </PlotCard>
       </div>

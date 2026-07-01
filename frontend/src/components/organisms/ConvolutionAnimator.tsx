@@ -5,7 +5,14 @@ import { Badge } from '../atoms/Badge';
 import { Formula } from '../atoms/Formula';
 import { Slider } from '../atoms/Slider';
 import { ConvolutionStage } from '../atoms/ConvolutionStage';
-import { convolutionFrame, convolutionLayout } from '../../lib/dsp';
+import { ContinuousConvolutionStage } from '../atoms/ContinuousConvolutionStage';
+import {
+  continuousConvolutionFrame,
+  continuousConvolutionLayout,
+  convolutionFrame,
+  convolutionLayout,
+} from '../../lib/dsp';
+import type { ConvolutionLayout } from '../../lib/dsp';
 import type { LTIResult } from '../../hooks/useLTISystem';
 import rowStyles from './PlotRow.module.css';
 import styles from './ConvolutionAnimator.module.css';
@@ -21,17 +28,25 @@ const STEP_MS = 420;
 
 /**
  * Tarjeta interactiva que muestra la convolución como un "tren móvil": la
- * entrada reflejada x[n−k] se desliza sobre el impulso h[k] mientras el
- * deslizador (o la reproducción automática) recorre la salida muestra a
- * muestra, resaltando en cada paso el solapamiento que produce y[n].
+ * entrada reflejada x[n−k] (o x(t−τ) en continuo) se desliza sobre el
+ * impulso h[k]/h(τ) mientras el deslizador (o la reproducción automática)
+ * recorre la salida, resaltando en cada paso el solapamiento que produce
+ * y[n] (o y(t)).
  */
 export function ConvolutionAnimator({
   result,
   inputLabel,
   systemLabel,
 }: ConvolutionAnimatorProps) {
-  const { x, h, y } = result;
-  const layout = useMemo(() => convolutionLayout(x, h), [x, h]);
+  const continuous = result.mode === 'continuo';
+
+  const layout = useMemo(
+    () =>
+      result.mode === 'continuo'
+        ? continuousConvolutionLayout(result.x, result.h)
+        : convolutionLayout(result.x, result.h),
+    [result],
+  );
   const { nStart, nEnd } = layout;
 
   const [n, setN] = useState(nStart);
@@ -57,23 +72,41 @@ export function ConvolutionAnimator({
     return () => clearInterval(id);
   }, [playing, nStart, nEnd]);
 
-  const frame = useMemo(() => convolutionFrame(x, h, safeN), [x, h, safeN]);
+  const frame = useMemo(
+    () =>
+      result.mode === 'continuo'
+        ? continuousConvolutionFrame(result.x, result.h, safeN)
+        : convolutionFrame(result.x, result.h, safeN),
+    [result, safeN],
+  );
 
   const stop = (next: number) => {
     setPlaying(false);
     setN(Math.min(nEnd, Math.max(nStart, next)));
   };
 
+  const dt = continuous ? (layout as ConvolutionLayout & { dt: number }).dt : 1;
+  const readoutLabel = continuous ? `t = ${(safeN * dt).toFixed(2)}s` : `n = ${safeN}`;
+  const readoutFormula = continuous
+    ? `y(${(safeN * dt).toFixed(2)}) = ${formatValue(frame.value)}`
+    : `y[${safeN}] = ${formatValue(frame.value)}`;
+
   return (
     <section className={rowStyles.freqSection}>
       <h2 className={rowStyles.sectionTitle}>
-        Convolución Paso a Paso (señal deslizante)
+        Convolución Paso a Paso ({continuous ? 'integral deslizante' : 'señal deslizante'})
       </h2>
       <Card className={styles.card}>
         <div className={styles.header}>
           <div className={styles.titles}>
             <span className={styles.title}>
-              <Formula expression="y[n]=\sum_{k} h[k]\,x[n-k]" />
+              <Formula
+                expression={
+                  continuous
+                    ? 'y(t)=\\int h(\\tau)\\,x(t-\\tau)\\,d\\tau'
+                    : 'y[n]=\\sum_{k} h[k]\\,x[n-k]'
+                }
+              />
             </span>
             <span className={styles.hint}>
               <Badge tone="blue">{inputLabel}</Badge> se refleja y desliza sobre{' '}
@@ -81,21 +114,31 @@ export function ConvolutionAnimator({
             </span>
           </div>
           <div className={styles.legend}>
-            <Legend color="var(--color-primary)" label="x[n−k]" />
-            <Legend color="var(--color-system)" label="h[k]" />
+            <Legend color="var(--color-primary)" label={continuous ? 'x(t−τ)' : 'x[n−k]'} />
+            <Legend color="var(--color-system)" label={continuous ? 'h(τ)' : 'h[k]'} />
             <Legend color="var(--color-output)" label="producto" />
             <Legend color="var(--color-amber-soft)" label="solapamiento" swatchBorder />
           </div>
         </div>
 
-        <ConvolutionStage frame={frame} layout={layout} output={y} />
+        {result.mode === 'continuo' ? (
+          <ContinuousConvolutionStage
+            frame={frame}
+            layout={layout as ReturnType<typeof continuousConvolutionLayout>}
+            x={result.x}
+            h={result.h}
+            output={result.y}
+          />
+        ) : (
+          <ConvolutionStage frame={frame} layout={layout} output={result.y} />
+        )}
 
         <div className={styles.readout}>
-          En <strong>n = {safeN}</strong> se solapan{' '}
+          En <strong>{readoutLabel}</strong> se solapan{' '}
           <strong>{frame.overlap.length}</strong>{' '}
           {frame.overlap.length === 1 ? 'muestra' : 'muestras'} ⇒{' '}
           <span className={styles.value}>
-            <Formula expression={`y[${safeN}] = ${formatValue(frame.value)}`} />
+            <Formula expression={readoutFormula} />
           </span>
         </div>
 

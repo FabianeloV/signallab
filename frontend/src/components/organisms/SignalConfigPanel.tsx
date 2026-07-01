@@ -4,9 +4,9 @@ import { SliderControl } from '../molecules/SliderControl';
 import { FormulaHint } from '../molecules/FormulaHint';
 import { Formula } from '../atoms/Formula';
 import { inputSignalFormula } from '../../lib/formulas';
-import { INPUT_PARAM_SPECS } from '../../lib/inputParams';
+import { getInputParamSpec } from '../../lib/inputParams';
 import type { SelectOption } from '../atoms/Select';
-import type { InputSignalType } from '../../types/signal';
+import type { InputSignalType, LTIMode } from '../../types/signal';
 
 const INPUT_OPTIONS: SelectOption<InputSignalType>[] = [
   { value: 'exponencial-decreciente', label: 'Exponencial Decreciente' },
@@ -23,6 +23,7 @@ const INPUT_OPTIONS: SelectOption<InputSignalType>[] = [
 ];
 
 interface SignalConfigPanelProps {
+  mode: LTIMode;
   inputType: InputSignalType;
   inputParam: number;
   length: number;
@@ -32,6 +33,7 @@ interface SignalConfigPanelProps {
 }
 
 export function SignalConfigPanel({
+  mode,
   inputType,
   inputParam,
   length,
@@ -39,11 +41,14 @@ export function SignalConfigPanel({
   onInputParam,
   onLength,
 }: SignalConfigPanelProps) {
+  const continuous = mode === 'continuo';
   const selected = INPUT_OPTIONS.find((o) => o.value === inputType);
-  const paramSpec = INPUT_PARAM_SPECS[inputType];
+  const paramSpec = getInputParamSpec(inputType, mode);
 
   return (
-    <ControlPanel title={<>Señal de Entrada <Formula expression="x[n]" /></>}>
+    <ControlPanel
+      title={<>Señal de Entrada <Formula expression={continuous ? 'x(t)' : 'x[n]'} /></>}
+    >
       <SelectControl
         label="Tipo de Función"
         value={inputType}
@@ -53,7 +58,7 @@ export function SignalConfigPanel({
 
       <FormulaHint
         caption={selected?.label}
-        expression={inputSignalFormula(inputType)}
+        expression={inputSignalFormula(inputType, mode)}
       />
 
       {paramSpec && (
@@ -77,7 +82,13 @@ export function SignalConfigPanel({
       )}
 
       <SliderControl
-        label={<>Longitud (<Formula expression="N" />)</>}
+        label={
+          continuous ? (
+            <>Duración (<Formula expression="T,\ s" />)</>
+          ) : (
+            <>Longitud (<Formula expression="N" />)</>
+          )
+        }
         value={length}
         min={5}
         max={40}
