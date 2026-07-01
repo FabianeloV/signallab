@@ -68,6 +68,11 @@ export function SamplingConfigPanel({
         onChange={onFs}
       />
 
+      <FormulaHint
+        caption="Criterio de Muestreo (Nyquist-Shannon)"
+        expression="F_s > 2B"
+      />
+
       <SliderControl
         label={<>Ventana Visible (ms)</>}
         value={windowMs}

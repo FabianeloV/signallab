@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
 import { Card } from '../atoms/Card';
 import { Badge } from '../atoms/Badge';
@@ -64,18 +64,48 @@ export function ConvolutionAnimator({
   }, [n, safeN]);
 
   const dt = continuous ? (layout as ConvolutionLayout & { dt: number }).dt : 1;
-  // En continuo, cada "paso" avanza 1 segundo (no 1 muestra de la rejilla
-  // interna, que sería un incremento imperceptible de solo `dt` segundos).
+  // En continuo, cada "paso" MANUAL (botones/slider) avanza 1 segundo (no 1
+  // muestra de la rejilla interna, que sería un incremento imperceptible de
+  // solo `dt` segundos).
   const step = continuous ? Math.max(1, Math.round(1 / dt)) : 1;
 
-  // Reproducción automática: avanza un paso y reinicia al llegar al final.
+  // Reproducción automática. En discreto avanza muestra a muestra a ritmo
+  // fijo. En continuo, en cambio, se anima con requestAnimationFrame para que
+  // el tiempo fluya de forma continua (1 segundo simulado ≈ 1 segundo real)
+  // en vez de saltar en bloques de 1 segundo cada STEP_MS, que se veía
+  // discreto/entrecortado.
+  const playFracRef = useRef(nStart);
+  const playTsRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!playing) return;
-    const id = setInterval(() => {
-      setN((cur) => (cur >= nEnd ? nStart : Math.min(nEnd, cur + step)));
-    }, STEP_MS);
-    return () => clearInterval(id);
-  }, [playing, nStart, nEnd, step]);
+
+    if (!continuous) {
+      const id = setInterval(() => {
+        setN((cur) => (cur >= nEnd ? nStart : Math.min(nEnd, cur + step)));
+      }, STEP_MS);
+      return () => clearInterval(id);
+    }
+
+    playFracRef.current = safeN;
+    playTsRef.current = null;
+    let raf = 0;
+
+    const tick = (ts: number) => {
+      if (playTsRef.current === null) playTsRef.current = ts;
+      const elapsedSeconds = (ts - playTsRef.current) / 1000;
+      playTsRef.current = ts;
+
+      playFracRef.current += elapsedSeconds / dt;
+      if (playFracRef.current >= nEnd) playFracRef.current = nStart;
+
+      setN(Math.floor(playFracRef.current));
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing, continuous, nStart, nEnd, step, dt]);
 
   const frame = useMemo(
     () =>

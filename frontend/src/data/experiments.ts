@@ -123,6 +123,60 @@ export const EXPERIMENTS: Experiment[] = [
       delay: 0,
     },
   },
+  {
+    id: 'pasa-bajos-continuo',
+    title: 'Filtro Pasa-Bajas RC: Suavizado de una Onda Cuadrada',
+    type: 'lab',
+    description:
+      'Una onda cuadrada (rica en armónicos de alta frecuencia) se filtra con un sistema RC de primer orden h(t) = a·e^(−at)·u(t), un filtro pasa-bajas continuo clásico. Al atenuar los armónicos altos, la salida y(t) = x(t) * h(t) se redondea, aproximándose a su componente fundamental (senoidal). Ilustra el filtrado pasa-bajas en tiempo continuo y su efecto en el dominio de la frecuencia (H(jω) atenúa |X(jω)| en alta frecuencia).',
+    preview: 'stem',
+    previewSamples: [1, 0.9, 0.6, 0.2, -0.2, -0.6, -0.9],
+    config: {
+      mode: 'continuo',
+      inputType: 'cuadrada',
+      inputParam: 0.1,
+      length: 30,
+      filterType: 'iir-primer-orden',
+      order: 6,
+      delay: 0,
+    },
+  },
+  {
+    id: 'pasa-altos-continua',
+    title: 'Filtro Pasa-Altas FIR: Eliminación de Nivel DC',
+    type: 'lab',
+    description:
+      'Un filtro pasa-altas por inversión espectral, h[n] = δ[n] − 1/(M+1), se aplica a una onda cuadrada. Su ganancia en continua (DC) es cero, por lo que elimina el nivel medio de la señal y deja pasar únicamente sus componentes de alta frecuencia (los flancos y la oscilación), a diferencia del diferenciador, que solo resalta los bordes.',
+    preview: 'stem',
+    previewSamples: [0.9, 0.5, -0.1, -0.6, -0.3, 0.4, 0.8],
+    config: {
+      mode: 'discreto',
+      inputType: 'cuadrada',
+      inputParam: 0.08,
+      length: 32,
+      filterType: 'pasa-altos-fir',
+      order: 6,
+      delay: 0,
+    },
+  },
+  {
+    id: 'recuperacion-senal',
+    title: 'Recuperación de Señal: Filtro de Reconstrucción',
+    type: 'lab',
+    description:
+      'Un pulso rectangular angosto —análogo al retenedor de orden cero (ZOH) que produce un conversor D/A a partir de una muestra— se pasa por un filtro pasa-bajas RC de reconstrucción. El filtrado suaviza los bordes abruptos y "recupera" una forma continua, el mismo principio (filtro pasa-bajas ideal) que permite reconstruir una señal analógica a partir de sus muestras cuando se cumple el criterio de Nyquist.',
+    preview: 'stem',
+    previewSamples: [0, 0.3, 0.7, 0.95, 0.8, 0.4, 0.1],
+    config: {
+      mode: 'continuo',
+      inputType: 'pulso-rectangular',
+      inputParam: 2,
+      length: 10,
+      filterType: 'iir-primer-orden',
+      order: 6,
+      delay: 0,
+    },
+  },
 
   // --- Análisis Espectral (Fourier, resolución, muestreo) ---
   {
