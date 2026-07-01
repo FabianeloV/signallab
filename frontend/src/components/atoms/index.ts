@@ -15,6 +15,7 @@ export { StemPlot } from './StemPlot';
 export { SpectrumPlot } from './SpectrumPlot';
 export type { AxisTick } from './SpectrumPlot';
 export { ContinuousPlot } from './ContinuousPlot';
-export type { ImpulseMarker } from './ContinuousPlot';
+export type { ImpulseMarker, SampleMarker } from './ContinuousPlot';
 export { ConvolutionStage } from './ConvolutionStage';
 export { ContinuousConvolutionStage } from './ContinuousConvolutionStage';
+export { SpectralReplicaPlot } from './SpectralReplicaPlot';

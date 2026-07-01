@@ -10,6 +10,11 @@ export interface ImpulseMarker {
   weight: number;
 }
 
+export interface SampleMarker {
+  x: number;
+  y: number;
+}
+
 interface ContinuousPlotProps {
   /** Eje horizontal (tiempo en segundos). */
   t: number[];
@@ -21,6 +26,10 @@ interface ContinuousPlotProps {
   faded?: boolean;
   /** Deltas de Dirac a dibujar como flechas en vez de la muestra 1/dt. */
   impulses?: ImpulseMarker[];
+  /** Puntos de muestreo a dibujar como círculos sobre la curva. */
+  sampleMarkers?: SampleMarker[];
+  /** Color de los puntos de muestreo (por defecto, el mismo que la curva). */
+  sampleColor?: string;
   /** Marcas del eje X con etiquetas. */
   xTicks?: AxisTick[];
 }
@@ -42,6 +51,8 @@ export function ContinuousPlot({
   fill = false,
   faded = false,
   impulses = [],
+  sampleMarkers = [],
+  sampleColor,
   xTicks,
 }: ContinuousPlotProps) {
   const { ref, size } = useElementSize<HTMLDivElement>();
@@ -52,7 +63,19 @@ export function ContinuousPlot({
     <div ref={ref} className={styles.container} style={{ height }}>
       {w > 0 && values.length > 0 && (
         <svg width={w} height={height} className={faded ? styles.faded : ''}>
-          {renderPlot({ t, values, color, w, h: height, fill, impulses, xTicks, gradientId })}
+          {renderPlot({
+            t,
+            values,
+            color,
+            w,
+            h: height,
+            fill,
+            impulses,
+            sampleMarkers,
+            sampleColor: sampleColor ?? color,
+            xTicks,
+            gradientId,
+          })}
         </svg>
       )}
     </div>
@@ -67,12 +90,14 @@ interface RenderArgs {
   h: number;
   fill: boolean;
   impulses: ImpulseMarker[];
+  sampleMarkers: SampleMarker[];
+  sampleColor: string;
   xTicks?: AxisTick[];
   gradientId: string;
 }
 
 function renderPlot(args: RenderArgs) {
-  const { t, values, color, w, h, fill, impulses, xTicks, gradientId } = args;
+  const { t, values, color, w, h, fill, impulses, sampleMarkers, sampleColor, xTicks, gradientId } = args;
 
   const innerW = w - PAD.left - PAD.right;
   const innerH = h - PAD.top - PAD.bottom;
@@ -89,8 +114,18 @@ function renderPlot(args: RenderArgs) {
   );
   const plotted = values.filter((_, i) => !impulseIdx.has(i));
 
-  const dataMin = Math.min(0, ...plotted, ...impulses.map((i) => Math.min(0, i.weight)));
-  const dataMax = Math.max(0, ...plotted, ...impulses.map((i) => Math.max(0, i.weight)));
+  const dataMin = Math.min(
+    0,
+    ...plotted,
+    ...impulses.map((i) => Math.min(0, i.weight)),
+    ...sampleMarkers.map((s) => s.y),
+  );
+  const dataMax = Math.max(
+    0,
+    ...plotted,
+    ...impulses.map((i) => Math.max(0, i.weight)),
+    ...sampleMarkers.map((s) => s.y),
+  );
   const yMin = dataMin;
   const yMax = dataMax || 1;
   const yRange = yMax - yMin || 1;
@@ -170,6 +205,19 @@ function renderPlot(args: RenderArgs) {
           </g>
         );
       })}
+
+      {/* Puntos de muestreo sobre la curva */}
+      {sampleMarkers.map((s, i) => (
+        <circle
+          key={i}
+          cx={xOf(s.x)}
+          cy={yOf(s.y)}
+          r={4}
+          fill={sampleColor}
+          stroke="#fff"
+          strokeWidth={1.2}
+        />
+      ))}
 
       {xTicks && (
         <g className={styles.axisText}>

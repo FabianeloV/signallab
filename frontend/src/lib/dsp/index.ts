@@ -17,3 +17,4 @@ export * from './continuousSystems';
 export * from './continuousConvolution';
 export * from './continuousConvolutionFrame';
 export * from './ctft';
+export * from './sampling';

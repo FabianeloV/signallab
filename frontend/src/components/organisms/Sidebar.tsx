@@ -1,6 +1,7 @@
 import {
   LayoutGrid,
   AudioLines,
+  Waves,
   Library,
   BookText,
   Settings,
@@ -28,6 +29,7 @@ export function Sidebar() {
         <p className={styles.sectionLabel}>Entorno</p>
         <SidebarItem to="/laboratorio" icon={<LayoutGrid size={ICON_SIZE} />} label="Laboratorio LTI" />
         <SidebarItem to="/analisis" icon={<AudioLines size={ICON_SIZE} />} label="Análisis Espectral" />
+        <SidebarItem to="/muestreo" icon={<Waves size={ICON_SIZE} />} label="Muestreo y Aliasing" />
         <SidebarItem to="/experimentos" icon={<Library size={ICON_SIZE} />} label="Experimentos de Ejemplo" />
 
         <p className={styles.sectionLabel}>Documentación</p>

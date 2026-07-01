@@ -63,14 +63,19 @@ export function ConvolutionAnimator({
     if (n !== safeN) setN(safeN);
   }, [n, safeN]);
 
+  const dt = continuous ? (layout as ConvolutionLayout & { dt: number }).dt : 1;
+  // En continuo, cada "paso" avanza 1 segundo (no 1 muestra de la rejilla
+  // interna, que sería un incremento imperceptible de solo `dt` segundos).
+  const step = continuous ? Math.max(1, Math.round(1 / dt)) : 1;
+
   // Reproducción automática: avanza un paso y reinicia al llegar al final.
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => {
-      setN((cur) => (cur >= nEnd ? nStart : cur + 1));
+      setN((cur) => (cur >= nEnd ? nStart : Math.min(nEnd, cur + step)));
     }, STEP_MS);
     return () => clearInterval(id);
-  }, [playing, nStart, nEnd]);
+  }, [playing, nStart, nEnd, step]);
 
   const frame = useMemo(
     () =>
@@ -85,7 +90,6 @@ export function ConvolutionAnimator({
     setN(Math.min(nEnd, Math.max(nStart, next)));
   };
 
-  const dt = continuous ? (layout as ConvolutionLayout & { dt: number }).dt : 1;
   const readoutLabel = continuous ? `t = ${(safeN * dt).toFixed(2)}s` : `n = ${safeN}`;
   const readoutFormula = continuous
     ? `y(${(safeN * dt).toFixed(2)}) = ${formatValue(frame.value)}`
@@ -147,7 +151,7 @@ export function ConvolutionAnimator({
             <button
               type="button"
               className={styles.iconButton}
-              onClick={() => stop(safeN - 1)}
+              onClick={() => stop(safeN - step)}
               disabled={safeN <= nStart}
               aria-label="Paso anterior"
             >
@@ -164,7 +168,7 @@ export function ConvolutionAnimator({
             <button
               type="button"
               className={styles.iconButton}
-              onClick={() => stop(safeN + 1)}
+              onClick={() => stop(safeN + step)}
               disabled={safeN >= nEnd}
               aria-label="Paso siguiente"
             >
@@ -176,13 +180,15 @@ export function ConvolutionAnimator({
               value={safeN}
               min={nStart}
               max={nEnd}
-              step={1}
+              step={step}
               onChange={stop}
               ariaLabel="Desplazamiento n de la convolución"
             />
           </div>
           <span className={styles.position}>
-            {safeN - nStart + 1} / {nEnd - nStart + 1}
+            {continuous
+              ? `${Math.round((safeN - nStart) / step) + 1} / ${Math.floor((nEnd - nStart) / step) + 1}`
+              : `${safeN - nStart + 1} / ${nEnd - nStart + 1}`}
           </span>
         </div>
       </Card>

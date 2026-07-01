@@ -3,6 +3,7 @@ import { AppLayout } from './components/templates/AppLayout';
 import {
   LaboratorioLTI,
   AnalisisEspectral,
+  MuestreoAliasing,
   ReportesTeoremas,
   ExperimentosGuardados,
   Configuracion,
@@ -23,6 +24,7 @@ function AppRoutes() {
           <Route index element={<Navigate to="/laboratorio" replace />} />
           <Route path="/laboratorio" element={<LaboratorioLTI />} />
           <Route path="/analisis" element={<AnalisisEspectral />} />
+          <Route path="/muestreo" element={<MuestreoAliasing />} />
           <Route path="/experimentos" element={<ExperimentosGuardados />} />
           <Route path="/reportes" element={<ReportesTeoremas />} />
           <Route path="/configuracion" element={<Configuracion />} />

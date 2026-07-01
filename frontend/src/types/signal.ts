@@ -95,3 +95,6 @@ export type TestSignalType =
 
 /** Escala del eje de magnitud en los espectros. */
 export type MagnitudeScale = 'lineal' | 'logaritmica';
+
+/** Señales de prueba del laboratorio de Muestreo y Aliasing. */
+export type SamplingSignalType = 'tono-puro' | 'dos-tonos';
